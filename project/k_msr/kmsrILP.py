@@ -11,7 +11,7 @@ def run_model(points, k):
     radii = distances.pairwise(points)
 
     print("Initializing model...")
-    m = gp.Model("kmsr")
+    m = gp.Model("k_msr")
     y = m.addVars(len(points), len(points), vtype=GRB.BINARY, name="Y")
 
     print("Adding constraints...")

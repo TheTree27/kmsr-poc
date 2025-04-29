@@ -1,6 +1,7 @@
 import argparse
 
-from kmsr import kmsrILP
+from k_msr import kmsrILP
+from k_msr import kmsrFPT
 from readData import read
 
 
@@ -8,14 +9,19 @@ def ilp(points, k):
     print("Running ILP")
     return kmsrILP.run_model(points, k)
 
+def fpt(points, k):
+    print("Running FPT")
+    return kmsrFPT.approximate(points, k)
+
 algorithms = {
-    'ILP': ilp
+    'ILP': ilp,
+    'FPT': fpt
 }
 
 def parse_input():
     parser = argparse.ArgumentParser(
         prog='ProgramName',
-        description='Select which kmsr algorithm to use',
+        description='Select which k_msr algorithm to use',
         epilog='')  # at the bottom of help
     parser.add_argument('filename')
     parser.add_argument('k', type=int, help='Number of centers')

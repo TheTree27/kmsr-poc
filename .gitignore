@@ -1,2 +1,4 @@
 /.idea
 *.log
+/project/data_sets
+*/__pycache__
