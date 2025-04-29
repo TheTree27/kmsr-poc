@@ -27,4 +27,4 @@ def run_model(points, k):
     final_centers = [points[i] for i in range(len(points)) for j in range(len(radii[i])) if y[i, j].x == 1]
     final_radii = [radii[i][j] for i in range(len(radii)) for j in range(len(radii[i])) if y[i, j].x == 1]
 
-    return final_centers, final_radii
+    return final_centers, final_radii, sum(final_radii)

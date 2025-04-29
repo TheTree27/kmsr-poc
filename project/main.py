@@ -31,9 +31,10 @@ def main():
     k = args.k
     points = read(args.filename)
     if algorithm:
-        centers, radii = algorithm(points, k)
+        centers, radii, sum_of_radii = algorithm(points, k)
         print(centers)
         print(radii)
+        print(sum_of_radii)
     else:
         print("No valid algorithm selected")
 
