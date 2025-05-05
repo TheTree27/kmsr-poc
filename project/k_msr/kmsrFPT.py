@@ -8,6 +8,7 @@ from scipy.spatial.distance import euclidean
 from sklearn.metrics import pairwise_distances
 import random
 import itertools
+import math
 
 dist = DistanceMetric.get_metric('euclidean')
 
@@ -48,11 +49,14 @@ def k_completion(points, centers, radii, k):
 
     return centers
 
-# estimation of k_msr
+# estimation of k_msr by
+# N. Lenßen, "Experimentelle Analyse von Min-Sum-Radii Approximationsalgorithmen". Bachelorarbeit, Heinrich-Heine-Universität Düsseldorf, 2024.
+# using
+# L. Drexler, A. Hennes, A. Lahiri, M. Schmidt, and J. Wargalla, "Approximating Fair K-Min-Sum-Radii in Euclidean Space," in Lecture notes in computer science, 2023, pp. 119–133. doi: 10.1007/978-3-031-49815-2_9.
 def kmsr_heuristic(points, k, random_state):
     kmsr = KMSR(n_clusters=k,
                 algorithm="FPT-heuristic",
-                epsilon=0.5,
+                epsilon=0.4, # needs to be between 0 and 0.5 for the approximation
                 n_u=10000,
                 n_test_radii=10,
                 random_state=random_state)
@@ -66,32 +70,48 @@ def get_assignment_tuples(k):
 
 
 def guessing_radii(points, k):
-    initial_radii = []
+
+    initial_radii = [] # will contain all guesses for the largest radius
     possible_radii = []
+
+
+
     # first we need to guess the largest radius, to decrease our guessing interval from there
     # for that we need an estimated k_msr solution as upper bound
 
-    kmsr = kmsr_heuristic(points, k, random.randint(0, k ^ k))
+    base_kmsr = kmsr_heuristic(points, k, random.randint(0, k ^ k)) # 1+epsilon approximation
 
-    # because we used a 1+epsilon approximation, we can simlify the equation a lot
-    epsilon = 0.5
-    for radius in kmsr:
-        initial_radii.append((1 + epsilon) * radius)
-    while (len(initial_radii) < k):
-        initial_radii.append(
-            0.0)  # we need exactly k radii for our purposes, this heuristic provides approximations with up to k radii so we add the rest as 0.0
 
-    # we build multiple possible profiles by decreasing each radius step by step
-    for i in range(len(initial_radii)):
-        possible_radii.append([initial_radii[i]])
-        if i < k - 1:
-            while initial_radii[i] > initial_radii[i + 1] + epsilon:
-                initial_radii[i] = initial_radii[i] - epsilon
-                possible_radii[i].append(initial_radii[i])
-        if i == k - 1:
-            while initial_radii[i] > 0 + epsilon:
-                initial_radii[i] = initial_radii[i] - epsilon
-                possible_radii[i].append(initial_radii[i])
+    epsilon = 0.4 # to stay consistent with epsilon used in heuristic
+    heuristic = [radius for radius in base_kmsr]
+    max_heuristic = max(heuristic)
+    beta = 1+epsilon
+    r_1_upper = max_heuristic * k
+    r_1_lower = max_heuristic / beta # divided by approximation factor of largest radius in heuristic
+    initial_radii.append(r_1_lower)
+    j = 1
+    initial_radii.append(pow(1 + epsilon, j - 1) * (max_heuristic / beta))
+    while (j < math.log(beta * k, 1+epsilon) and initial_radii[-1] < r_1_upper): # both conditions should mean the same
+        initial_radii.append(pow(1+epsilon, j) * (max_heuristic/beta)) # if the actual radius is between this and the previous iteration, this one is at most 1+epsilon times worse
+        j += 1
+    possible_radii.append(initial_radii)
+
+
+    i = 1
+    for i in range(k):
+        profile_section = []
+        for radius in possible_radii[i]:
+            current_interval = []
+            j = i+1
+            lower_bound = (epsilon / k) * radius
+            current_interval.append(lower_bound)
+            while (j < math.log(beta * k, 1+epsilon) and initial_radii[-1] < radius * k):
+                current_interval.append(pow(1+epsilon, j) * (radius/beta))
+                j += 1
+            profile_section.append(current_interval)
+        possible_radii.append(profile_section)
+
+
 
     # we add all permutations of these radii (the carthesian product)
     radii = [list(profile) for profile in itertools.product(*possible_radii)]
@@ -127,7 +147,7 @@ def approximate(points, k):
     for profile in radius_profile_guesses:
         for a in assignment_tuples:
             guessed_centers, radius_profile = algorithm_2(points, k, profile, a)
-            guessed_solution = (sum(radius_profile))
+            guessed_solution = (sum(radius_profile)) # need to check if solution is viable
             if guessed_solution < upper_bound:
                 final_centers = guessed_centers
                 final_radii = radius_profile
