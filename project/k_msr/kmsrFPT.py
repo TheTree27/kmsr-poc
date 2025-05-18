@@ -7,6 +7,7 @@ import random
 import itertools
 import math
 from k_center import gonzalez
+from k_center import helper
 
 
 
@@ -55,25 +56,6 @@ def get_assignment_tuples(n, k):
     return list(itertools.combinations_with_replacement(range(n), k))
 
 
-def get_radii(points, centers):
-    radii = []
-    assigned_points = defaultdict(list)
-
-    for point in points:
-        distances = np.linalg.norm(centers - point, axis=1)
-        nearest_center_idx = np.argmin(distances)
-        assigned_points[nearest_center_idx].append(point)
-
-    for idx, center in enumerate(centers):
-        if assigned_points[idx]:
-            assigned = np.array(assigned_points[idx])
-            max_dist = np.max(np.linalg.norm(assigned - center, axis=1))
-        else:
-            max_dist = 0  # catch empty clusters with only the center
-        radii.append(max_dist)
-
-    return radii
-
 
 def guessing_radii(points, k):
     possible_radii_profiles = []
@@ -81,10 +63,10 @@ def guessing_radii(points, k):
     # first we need to guess the largest radius, to decrease our guessing interval from there
     # for that we need an estimated k center solution as upper bound
 
-    k_center = gonzalez.run(points, k)  # 2 approximation
+    k_center, gonzalez_radii, gonzalez_solution = gonzalez.run(points, k)  # 2 approximation
 
     epsilon = 0.25  # use lower epsilon for more (and more precise), but slower results
-    k_center_radii = get_radii(points, k_center)
+    k_center_radii = helper.find_radii(points, k_center)
     max_radius = max(k_center_radii)
     beta = 2  # approximation factor
     j = 1
