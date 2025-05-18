@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.metrics import DistanceMetric
-import helper
+from k_center import helper
 
 
 def run(points, k):

@@ -2,7 +2,7 @@ import argparse
 
 from k_msr import kmsrILP
 from k_msr import kmsrFPT
-from k_center import gonzalez
+import k_center.gonzalez
 from readData import read
 
 
@@ -16,7 +16,7 @@ def fpt(points, k):
 
 def gonzalez(points, k):
     print("Running Gonzalez")
-    return gonzalez.run(points, k)
+    return k_center.gonzalez.run(points, k)
 
 algorithms = {
     'ILP': ilp,
@@ -44,9 +44,9 @@ def main():
     points = read(args.filename)
     if algorithm:
         centers, radii, sum_of_radii = algorithm(points, k)
-        print(centers)
-        print(radii)
-        print(sum_of_radii)
+        print("Centers:", centers)
+        print("Radii:", radii)
+        print("kMSR:", sum_of_radii)
     else:
         print("No valid algorithm selected")
 
