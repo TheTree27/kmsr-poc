@@ -2,6 +2,7 @@ import argparse
 
 from k_msr import kmsrILP
 from k_msr import kmsrFPT
+from k_center import gonzalez
 from readData import read
 
 
@@ -13,9 +14,14 @@ def fpt(points, k):
     print("Running FPT")
     return kmsrFPT.approximate(points, k)
 
+def gonzalez(points, k):
+    print("Running Gonzalez")
+    return gonzalez.run(points, k)
+
 algorithms = {
     'ILP': ilp,
-    'FPT': fpt
+    'FPT': fpt,
+    'GONZALEZ': gonzalez
 }
 
 def parse_input():
