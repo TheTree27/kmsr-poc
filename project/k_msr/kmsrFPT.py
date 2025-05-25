@@ -2,15 +2,12 @@ from collections import defaultdict
 import numpy as np
 from sklearn.metrics import DistanceMetric
 from scipy.spatial.distance import euclidean
-from sklearn.metrics import pairwise_distances
 import random
 import itertools
 import math
 from k_center import gonzalez
-from k_center import helper
 
-
-
+# unfair version of https://arxiv.org/abs/2410.00598 by Lena Carta, Lukas Drexler, Annika Hennes, Clemens Rösner, Melanie Schmidt
 
 pairwise_dist = DistanceMetric.get_metric('euclidean')
 
@@ -35,25 +32,23 @@ def dist_m(point_a, point_b, centers, radii):
         return default_distance
 
 
+# algorithm 1 using the modified distance function
 def k_completion(points, centers, radii, k):
     if (k == len(centers)):
         return centers
 
     if (len(centers) == 0):
-        centers.append(points[np.random.choice(len(points))])
+        centers.append(random.choice(points))
+
+    modified_dists = np.array([[dist_m(center, point, centers, radii) for point in points] for center in centers])
+    min_dists = modified_dists.min(
+        axis=0)  # axis attribute selects min distance to a center for each point instead of the other way around
 
     while (len(centers) < k):
-        dists = np.min(pairwise_distances(points, metric=dist_m, centers=np.array(centers), radii=radii),
-                       axis=1)  # the axis attribute stops it from returning the same center over and over again
-
-        farthest_idx = np.argmax(dists)
+        farthest_idx = np.argmax(min_dists)
         centers.append(points[farthest_idx])
 
-    return centers
-
-# this allows for tuples like [1, 1, 1, 1], that can lead to the same center being picked twice
-def get_assignment_tuples(n, k):
-    return list(itertools.combinations_with_replacement(range(n), k))
+    return centers  # skipping the assignment, instead implementing it later
 
 
 
@@ -62,11 +57,9 @@ def guessing_radii(points, k):
 
     # first we need to guess the largest radius, to decrease our guessing interval from there
     # for that we need an estimated k center solution as upper bound
+    k_centers, k_center_radii, k_center_sum = gonzalez.run(points, k)  # 2 approximation
 
-    k_center, gonzalez_radii, gonzalez_solution = gonzalez.run(points, k)  # 2 approximation
-
-    epsilon = 0.25  # use lower epsilon for more (and more precise), but slower results
-    k_center_radii = helper.find_radii(points, k_center)
+    epsilon = 0.3  # use lower epsilon for more (and more precise), but slower results
     max_radius = max(k_center_radii)
     beta = 2  # approximation factor
     j = 1
@@ -96,20 +89,21 @@ def guessing_radii(points, k):
 
 
 def algorithm_2(points, k, radii, assignment_tuple):
-    radii = [radii[i] for i in assignment_tuple] # because the guessed profile can (and almost always will) contain more than k radii
-    assignment_tuple = [i for i in range(k)]
 
     guessed_centers = k_completion(points=points, centers=[], radii=radii, k=k)
-    for i in range(k):
-        temp_centers = k_completion(points=points, centers=guessed_centers[:i], radii=radii, k=k)
-        if(assignment_tuple[i]<i):
-            radii[assignment_tuple[i]] += 3 * radii[i]
-            radii[i] == 0
-            temp_centers[i] == random.choice(points)
-        elif(assignment_tuple[i] >= i):
-            temp_centers[i] = temp_centers[assignment_tuple[i]]
-            radii[i] = 3 * radii[i]
-        guessed_centers = k_completion(points=points, centers=temp_centers[:i+1], radii=radii, k=k)
+    i = 1
+    while i <= k:
+        temp_centers = k_completion(points=points, centers=guessed_centers[:i-2], radii=radii, k=k)
+        if(assignment_tuple[i-1]<i):
+            radii[assignment_tuple[i-1]] += 3 * radii[i-1]
+            radii[i-1] == 0
+            temp_centers[i-1] == random.choice(points)
+        elif(assignment_tuple[i-1] >= i):
+            temp_centers[i-1] = temp_centers[assignment_tuple[i-1]]
+            radii[i-1] = 3 * radii[i-1]
+        guessed_centers = k_completion(points=points, centers=temp_centers[:i-1], radii=radii, k=k)
+
+        i += 1
     return guessed_centers, radii
 
 
@@ -123,17 +117,38 @@ def all_points_covered(centers, radii, points):
             if not covered: return False
     return True
 
+# to reduce the x many guessed radius candidates from the intervals to a profile with length k
+def candidates_to_profile(n, k):
+    return list(itertools.combinations_with_replacement(range(n), k))
 
+# this allows for tuples like [1, 1, 1, 1], that can lead to the same center being picked twice
+def get_assignment_tuples(k):
+    return list(itertools.combinations_with_replacement(range(k), k))
+
+def reduce_candidates(candidates, k):
+    result = []
+    permutations = candidates_to_profile(len(candidates[0]), k)
+    i = 0
+    for profile in candidates:
+        for indices in permutations:
+            result.append([])
+            for idx in indices:
+                result[i].append(profile[idx])
+            i += 1
+    return result
 
 
 def approximate(points, k):
     print("Running approximation...")
     final_centers = []
-    upper_bound = (2 + 0.5) * max([euclidean(a, b) for a in points for b in
-                                   points])  # using a 2 + epsilon approximation the sum of all radii can't be larger than 2 + epsilon times the largest distance
+    upper_bound = (2 + 0.5) * max([euclidean(a, b) for a in points for b in points])  # using a 2 + epsilon approximation the sum of all radii can't be larger than 2 + epsilon times the largest distance
     print("Guessing radii...")
-    radius_profile_guesses = guessing_radii(points, k)
-    assignment_tuples = get_assignment_tuples(len(radius_profile_guesses[0]), k)
+
+    radius_profile_candidates = guessing_radii(points, k)  # guetting intervals
+    radius_profile_guesses = reduce_candidates(radius_profile_candidates,
+                                               k)  # reducing list of lists of intervals to list of lists of k possible radii
+    assignment_tuples = get_assignment_tuples(k)  # [(0,0,0),(0,0,1),...,(k-1,k-1,k-1)]
+
     final_radii = []
     print("Comparing guesses. This might take a while...")
     i = 1
