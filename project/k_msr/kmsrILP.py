@@ -14,6 +14,10 @@ def run_model(points, k):
     m = gp.Model("k_msr")
     y = m.addVars(len(points), len(points), vtype=GRB.BINARY, name="Y")
 
+    # objective:
+    m.setObjective(gp.quicksum([y[i, j] * radii[i][j] for i in range(len(radii)) for j in range(len(radii[i]))]),
+                   GRB.MINIMIZE)  # should be the minimization of the sum of active y_ij times their respective radii
+
     print("Adding constraints...")
     for n in range(len(points)):
         m.addConstr(gp.quicksum([y[i, j] for j in range(len(radii)) for i in range(len(radii)) if
