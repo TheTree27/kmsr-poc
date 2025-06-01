@@ -1,6 +1,6 @@
 import argparse
 
-from k_msr import kmsrILP
+from k_msr import kmsrILP, kmsrHeuristic
 from k_msr import kmsrFPT
 import k_center.gonzalez
 from readData import read
@@ -14,14 +14,21 @@ def fpt(points, k):
     print("Running FPT")
     return kmsrFPT.approximate(points, k)
 
+# T. F. Gonzalez, "Clustering to minimize the maximum intercluster distance," Theoretical Computer Science, vol. 38, pp. 293–306, Jan. 1985, doi: 10.1016/0304-3975(85)90224-5.
 def gonzalez(points, k):
     print("Running Gonzalez")
     return k_center.gonzalez.run(points, k)
 
+# N. Lenßen, "Experimentelle Analyse von Min-Sum-Radii Approximationsalgorithmen". Bachelorarbeit, Heinrich-Heine-Universität Düsseldorf, 2024.
+def heuristic(points, k):
+    print("Running FPT heuristic")
+    return kmsrHeuristic.run(points, k)
+
 algorithms = {
     'ILP': ilp,
     'FPT': fpt,
-    'GONZALEZ': gonzalez
+    'GONZALEZ': gonzalez,
+    'HEURISTIC': heuristic
 }
 
 def parse_input():
