@@ -4,6 +4,7 @@ from k_msr import kmsrILP, kmsrHeuristic
 from k_msr import kmsrFPT
 import k_center.gonzalez
 from readData import read
+from k_means import k_means_pp
 
 
 def ilp(points, k):
@@ -24,11 +25,17 @@ def heuristic(points, k):
     print("Running FPT heuristic")
     return kmsrHeuristic.run(points, k)
 
+def k_means(points, k):
+    print("Running K-Means")
+    return k_means_pp.run(points, k)
+
+
 algorithms = {
     'ILP': ilp,
     'FPT': fpt,
     'GONZALEZ': gonzalez,
-    'HEURISTIC': heuristic
+    'HEURISTIC': heuristic,
+    'K-MEANS': k_means,
 }
 
 def parse_input():
