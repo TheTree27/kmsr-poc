@@ -4,6 +4,8 @@ from kmsr import KMSR
 import sys
 import io
 
+
+# provides centroids in space, not centers from the given points
 def run(points, k):
     save_stdout = sys.stdout
     sys.stdout = io.BytesIO()
