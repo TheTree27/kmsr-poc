@@ -48,7 +48,9 @@ def parse_input():
     parser.add_argument('algorithm', help='Which algorithm to use, eg. "ILP"')
     return parser
 
-
+def _main(algorithm, k, filename):
+    algorithm = algorithms[algorithm]
+    return algorithm(filename, k)
 
 def main():
     parser = parse_input()
