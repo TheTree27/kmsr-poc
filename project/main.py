@@ -50,7 +50,8 @@ def parse_input():
 
 def _main(algorithm, k, filename):
     algorithm = algorithms[algorithm]
-    return algorithm(filename, k)
+    points = read(filename)
+    return algorithm(points, k)
 
 def main():
     parser = parse_input()

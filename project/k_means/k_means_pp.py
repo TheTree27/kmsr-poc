@@ -2,13 +2,13 @@ from kmsr import KMSR
 
 # prevent unwanted output
 import sys
-import io
+import _io_
 
 
 # provides centroids in space, not centers from the given points
 def run(points, k):
     save_stdout = sys.stdout
-    sys.stdout = io.BytesIO()
+    sys.stdout = _io_.BytesIO()
     kmpp = KMSR(n_clusters=k,
                      algorithm="KMeans",
                      epsilon=0.5,
