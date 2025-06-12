@@ -8,8 +8,9 @@ data_sets = ["iris.data", "rl5934.txt", "ruspini.csv"]
 
 
 def main():
-    filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".csv"
-    write_header(filename)
+    result_directory = "/results/"
+    filename = result_directory.join(datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".csv")
+    write_header(filename, algorithms)
     for algorithm in algorithms:
         for data_set in data_sets:
             for k in ks:
