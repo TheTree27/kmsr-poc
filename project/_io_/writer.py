@@ -1,9 +1,9 @@
 import csv
 
-def write_header(filename, algorithms):
+def write_header(filename):
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(algorithms)
+        writer.writerow(["centers","radii","sum_of_radii"])
 
 def write_result(filename, centers, radii, sum_of_radii):
     row =  [centers, radii, sum_of_radii]

@@ -3,7 +3,7 @@ import argparse
 from k_msr import kmsrILP, kmsrHeuristic
 from k_msr import kmsrFPT
 import k_center.gonzalez
-from readData import read
+from _io_.readData import read
 from k_means import k_means_pp
 
 

@@ -8,9 +8,9 @@ data_sets = ["iris.data", "rl5934.txt", "ruspini.csv"]
 
 
 def main():
-    filename = "results/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".csv"
-    writer.write_header(filename, algorithms)
     for algorithm in algorithms:
+        filename = "results/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "-" + algorithm + ".csv"
+        writer.write_header(filename)
         for data_set in data_sets:
             for k in ks:
                 print("Computing", algorithm, "on", data_set, "with k=", k)
