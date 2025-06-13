@@ -1,6 +1,7 @@
 from datetime import datetime
 from main import _main
 from _io_ import writer
+from termcolor import colored
 
 algorithms = ["ILP", "FPT", "GONZALEZ", "HEURISTIC", "K-MEANS"]
 ks = [1, 2, 3, 4, 10, 100]
@@ -13,10 +14,10 @@ def main():
         writer.write_header(filename)
         for data_set in data_sets:
             for k in ks:
-                print("Computing", algorithm, "on", data_set, "with k =", k)
+                print(colored(("Computing", algorithm, "on", data_set, "with k =", k), 'green'))
                 centers, radii, sum_of_radii = _main(algorithm, k, data_set)
                 writer.write_result(filename, centers, radii, sum_of_radii)
-    print("Done")
+    print(colored("Done", 'green'))
 
 
 if __name__ == '__main__':
