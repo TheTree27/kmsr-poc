@@ -13,10 +13,12 @@ def main():
         filename = "results/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "-" + algorithm + ".csv"
         writer.write_header(filename)
         for data_set in data_sets:
+            if data_set == "rl5934.txt" and algorithm == "ILP":
+                continue
             for k in ks:
-                print(colored(("Computing", algorithm, "on", data_set, "with k =", k), 'green'))
+                print(colored("Computing " + algorithm + " on " + data_set + " with k = " + str(k), 'green'))
                 centers, radii, sum_of_radii = _main(algorithm, k, data_set)
-                writer.write_result(filename, centers, radii, sum_of_radii)
+                writer.write_result(filename, k, centers, radii, sum_of_radii, data_set)
     print(colored("Done", 'green'))
 
 
