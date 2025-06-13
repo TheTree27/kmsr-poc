@@ -13,9 +13,9 @@ def main():
         writer.write_header(filename)
         for data_set in data_sets:
             for k in ks:
-                print("Computing", algorithm, "on", data_set, "with k=", k)
+                print("Computing", algorithm, "on", data_set, "with k =", k)
                 centers, radii, sum_of_radii = _main(algorithm, k, data_set)
-                writer.write_result(algorithm, centers, radii, sum_of_radii)
+                writer.write_result(filename, centers, radii, sum_of_radii)
     print("Done")
 
 
