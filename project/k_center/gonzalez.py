@@ -12,7 +12,8 @@ def run(points, k):
     centers.append(points[start_idx])
 
     if (k == 1):
-        return centers
+        radii = helper.find_radii(points, centers)
+        return np.array(centers), radii, sum(radii)
 
     pairwise_dist = DistanceMetric.get_metric('euclidean')
     while (len(centers) < k):

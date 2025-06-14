@@ -1,4 +1,5 @@
 import argparse
+import time
 
 from k_msr import kmsrILP, kmsrHeuristic
 from k_msr import kmsrFPT
@@ -51,9 +52,12 @@ def parse_input():
 def _main(algorithm, k, filename):
     algorithm = algorithms[algorithm]
     points = read("data_sets/" + filename)
+    print(algorithm)
+    print(points)
     return algorithm(points, k)
 
 def main():
+    start_time = time.time()
     parser = parse_input()
     args = parser.parse_args()
     algorithm = algorithms[args.algorithm]
@@ -66,6 +70,7 @@ def main():
         print("kMSR:", sum_of_radii)
     else:
         print("No valid algorithm selected")
+    print("Time elapsed: ", time.time() - start_time, "seconds")
 
 if __name__ == '__main__':
     main()

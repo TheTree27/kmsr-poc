@@ -3,7 +3,7 @@ from main import _main
 from _io_ import writer
 from termcolor import colored
 
-algorithms = ["ILP", "FPT", "GONZALEZ", "HEURISTIC", "K-MEANS"]
+algorithms = ["ILP", "FPT", "GONZALEZ", "HEURISTIC", "K-MEANS"] 
 ks = [1, 2, 3, 4, 10, 100]
 data_sets = ["iris.data", "rl5934.txt", "ruspini.csv"]
 
