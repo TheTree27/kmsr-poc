@@ -4,7 +4,7 @@ import time
 from k_msr import kmsrILP, kmsrHeuristic
 from k_msr import kmsrFPT
 import k_center.gonzalez
-from _io_.readData import read
+from _io___.readData import read
 from k_means import k_means_pp
 
 
@@ -52,8 +52,6 @@ def parse_input():
 def _main(algorithm, k, filename):
     algorithm = algorithms[algorithm]
     points = read("data_sets/" + filename)
-    print(algorithm)
-    print(points)
     return algorithm(points, k)
 
 def main():

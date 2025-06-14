@@ -19,23 +19,6 @@ def find_radii(points, centers):
         else:
             max_dist = 0  # catch empty clusters with only the center
         radii.append(max_dist)
-
-    """ assigned_points = defaultdict(list)
-
-        distances = [math.dist(p,q) for p,q in zip(points, centers)]
-        for point in points:
-            nearest_center_idx = np.argmin(distances)
-            assigned_points[nearest_center_idx].append(point)
-
-        for idx, center in enumerate(centers):
-            if assigned_points[idx]:
-                assigned = np.array(assigned_points[idx])
-                max_dist = np.max([math.dist(p,q) for p,q in zip(assigned, centers)])
-            else:
-                max_dist = 0  # catch empty clusters with only the center
-            radii.append(max_dist)
-
-        return radii"""
     return radii
 
 
