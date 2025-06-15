@@ -2,3 +2,6 @@
 *.log
 /project/data_sets
 */__pycache__
+/project/results/
+*/results/
+*/data_sets/*
