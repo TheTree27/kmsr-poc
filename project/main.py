@@ -17,7 +17,7 @@ def fpt(points, k):
     return kmsrFPT.approximate(points, k)
 
 # T. F. Gonzalez, "Clustering to minimize the maximum intercluster distance," Theoretical Computer Science, vol. 38, pp. 293–306, Jan. 1985, doi: 10.1016/0304-3975(85)90224-5.
-def gonzalez(points, k):
+def gonzalez(points, k, seed=None):
     print("Running Gonzalez")
     return k_center.gonzalez.run(points, k)
 
@@ -26,7 +26,7 @@ def heuristic(points, k):
     print("Running FPT heuristic")
     return kmsrHeuristic.run(points, k)
 
-def k_means(points, k):
+def k_means(points, k, seed=42):
     print("Running K-Means")
     return k_means_pp.run(points, k)
 
@@ -49,9 +49,11 @@ def parse_input():
     parser.add_argument('algorithm', help='Which algorithm to use, eg. "ILP"')
     return parser
 
-def _main(algorithm, k, filename):
+def _main(algorithm, k, filename, seed=None):
     algorithm = algorithms[algorithm]
     points = read("data_sets/" + filename)
+    if seed:
+        return algorithm(points, k, seed)
     return algorithm(points, k)
 
 def main():

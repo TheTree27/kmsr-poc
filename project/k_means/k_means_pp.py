@@ -6,7 +6,7 @@ import io
 
 
 # provides centroids in space, not centers from the given points
-def run(points, k):
+def run(points, k, seed=42):
     save_stdout = sys.stdout
     sys.stdout = io.BytesIO()
     kmpp = KMSR(n_clusters=k,
@@ -14,7 +14,7 @@ def run(points, k):
                      epsilon=0.5,
                      n_u=10000,
                      n_test_radii=10,
-                     random_state=42)
+                     random_state=seed)
     kmpp.fit(points)
     sys.stdout = save_stdout
     return kmpp.cluster_centers_, kmpp.cluster_radii_, sum(kmpp.cluster_radii_)

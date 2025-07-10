@@ -1,9 +1,11 @@
 import numpy as np
 from sklearn.metrics import DistanceMetric
 from k_center import helper
+import random
 
 
-def run(points, k):
+def run(points, k, seed=42):
+    random.seed(seed)
     points = np.array(points)
     n = len(points)
     centers = []

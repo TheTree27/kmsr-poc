@@ -1,6 +1,5 @@
 import csv
 
-from torch.distributed.collective_utils import all_gather_object_enforce_type
 
 
 def write_header(filename):
