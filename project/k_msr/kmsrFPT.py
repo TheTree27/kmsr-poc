@@ -59,7 +59,7 @@ def guessing_radii(points, k):
     # for that we need an estimated k center solution as upper bound
     k_centers, k_center_radii, k_center_sum = gonzalez.run(points, k)  # 2 approximation
 
-    epsilon = 0.3  # use lower epsilon for more (and more precise), but slower results
+    epsilon = 0.4  # use lower epsilon for more (and more precise), but slower results
     max_radius = max(k_center_radii)
     beta = 2  # approximation factor
     j = 1
@@ -114,7 +114,7 @@ def all_points_covered(centers, radii, points):
             if euclidean(point, center) <= radius:
                 covered = True
                 break
-            if not covered: return False
+        if not covered: return False
     return True
 
 # to reduce the x many guessed radius candidates from the intervals to a profile with length k
@@ -141,7 +141,7 @@ def reduce_candidates(candidates, k):
 def approximate(points, k):
     print("Running approximation...")
     final_centers = []
-    upper_bound = (2 + 0.5) * max([euclidean(a, b) for a in points for b in points])  # using a 2 + epsilon approximation the sum of all radii can't be larger than 2 + epsilon times the largest distance
+    upper_bound = (2 + 0.4) * max([euclidean(a, b) for a in points for b in points])  # using a 2 + epsilon approximation the sum of all radii can't be larger than 2 + epsilon times the largest distance
     print("Guessing radii...")
 
     radius_profile_candidates = guessing_radii(points, k)  # guetting intervals
