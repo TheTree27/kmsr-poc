@@ -1,9 +1,13 @@
+# script to manually call algorithms with desired k and data set
+
 import argparse
 import time
 
 from k_msr import kmsrILP, kmsrHeuristic
 from k_msr import kmsrFPT
 import k_center.gonzalez
+import k_center.k_means_ppCenter
+import k_center.kmsrHeuristicCenter
 from _io___.readData import read
 from k_means import k_means_pp
 
@@ -26,9 +30,18 @@ def heuristic(points, k):
     print("Running FPT heuristic")
     return kmsrHeuristic.run(points, k)
 
+# D. Arthur and S. Vassilvitskii, "k-means++: the advantages of careful seeding," Symposium on Discrete Algorithms, pp. 1027–1035, Jan. 2007, doi: 10.5555/1283383.1283494.
 def k_means(points, k, seed=42):
     print("Running K-Means")
     return k_means_pp.run(points, k)
+
+def k_means_center(points, k, seed=42):
+    print("Running K-MeansCenter")
+    return k_center.k_means_ppCenter.run(points, k, seed)
+
+def heuristic_center(points, k, seed=42):
+    print("Running HeuristicCenter")
+    return k_center.k_means_ppCenter.run(points, k, seed)
 
 
 algorithms = {
@@ -37,6 +50,8 @@ algorithms = {
     'GONZALEZ': gonzalez,
     'HEURISTIC': heuristic,
     'K-MEANS': k_means,
+    'K-MEANS-CENTER': k_means_center,
+    'HEURISTIC-CENTER': heuristic_center,
 }
 
 def parse_input():
@@ -49,6 +64,7 @@ def parse_input():
     parser.add_argument('algorithm', help='Which algorithm to use, eg. "ILP"')
     return parser
 
+# to be called by other scripts, supports choice of random seed (in this case pipeline.py)
 def _main(algorithm, k, filename, seed=None):
     algorithm = algorithms[algorithm]
     points = read("data_sets/" + filename)
@@ -56,8 +72,9 @@ def _main(algorithm, k, filename, seed=None):
         return algorithm(points, k, seed)
     return algorithm(points, k)
 
+# calling the algorithm with k value on data set specified in cl arguments
 def main():
-    start_time = time.time()
+    start_time = time.time() # track time of execution
     parser = parse_input()
     args = parser.parse_args()
     algorithm = algorithms[args.algorithm]

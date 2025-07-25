@@ -13,7 +13,7 @@ def read(filename):
                 continue
 
             # split on either comma or space, depending on what is in the file. might break if floats are
-            # seperated by commas o.0
+            # seperated by commas (fortunately they aren't in the /data_sets/ folder)
             coordinates = re.split(r'[,\s]+', line)
 
             current_point = []
@@ -21,7 +21,7 @@ def read(filename):
                 try:
                     current_point.append(float(coordinate))
                 except ValueError:
-                    continue  # just skip non-numeric elements (so strings)
+                    continue  # skip non-numeric elements (so strings), necessary for iris classifications
             # at the end of the line if it's not empty add the point to the data
             if current_point:
                 points.append(current_point)

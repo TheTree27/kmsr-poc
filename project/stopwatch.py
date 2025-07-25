@@ -15,8 +15,8 @@ def main():
 
     for n in list_of_n:
         for k in list_of_k:
-            if (n==500 and k>1):
-                break
+            # generating dummy data for each version of the run
+            # not strictly necessary to have it be k clusters, but as the run time does not depend on what the distances actually are it just feels right
             points, cluster_membership = make_blobs(
                 n_samples=n,
                 n_features=2,
@@ -24,7 +24,7 @@ def main():
                 random_state=42
             )
             start_time = time.time()
-            centers, radii, sum_of_radii = kmsrILP.run_model(points, k)
+            centers, radii, sum_of_radii = kmsrILP.run_model(points, k) # function returns values, even if they have no use here
             time_elapsed = time.time() - start_time
             with open(filename, mode='a', newline='') as file:
                 csv.writer(file).writerow([n, k, time_elapsed])
